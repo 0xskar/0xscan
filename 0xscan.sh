@@ -21,8 +21,7 @@ echo "Target IP address: $target_ip"
 # Perform initial port scan to discover open ports
 nmap -T4 -p- $target_ip -vvv -oN /tmp/scan_results.txt
 open_ports=$(grep '[^0-9]' /tmp/scan_results.txt | cut -d '/' -f 1 | grep '^[0-9]' | tr '\n' ',' | sed s/,$//)
-
-
+rm /tmp/scan_results.txt
 echo "Open ports: $open_ports"
 
 # Run additional scans on open ports
