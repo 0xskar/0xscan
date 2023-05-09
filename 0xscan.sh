@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# nmap scanner (c) 2023 0xskar
+# 0xskar nmap scanner (c) 2023
 
 # Check if user is root
 if [ "$EUID" -ne 0 ]; then
@@ -22,6 +22,13 @@ echo "Target IP address: $target_ip"
 nmap -T4 -p- $target_ip -vvv -oN /tmp/scan_results.txt
 open_ports=$(grep '[^0-9]' /tmp/scan_results.txt | cut -d '/' -f 1 | grep '^[0-9]' | tr '\n' ',' | sed s/,$//)
 rm /tmp/scan_results.txt
+
+# Try null scan if normal scan is not picking up open ports
+if [ -z $open_ports ]; then
+    nmap -T4 -p- -Pn $target_ip -vvv -oN /tmp/scan_results.txt
+    open_ports=$(grep '[^0-9]' /tmp/scan_results.txt | cut -d '/' -f 1 | grep '^[0-9]' | tr '\n' ',' | sed s/,$//)
+    rm /tmp/scan_results.txt
+fi
 
 echo "*************************************************"
 echo "Open ports discovered: $open_ports"
